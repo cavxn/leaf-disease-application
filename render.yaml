@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: leaf-disease-detector
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python leaf-disease-detector/leaf_api_render.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.12
+      - key: PORT
+        value: 8000
+    plan: free
