@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String _url = "http://10.126.101.156:8000/predict";
+  static const String _url = "https://leaf-disease-application.onrender.com/predict";
 
   static Future<String> predictDisease(File image) async {
     final request = http.MultipartRequest('POST', Uri.parse(_url));
