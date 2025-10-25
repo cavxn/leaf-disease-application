@@ -90,6 +90,10 @@ dependencies:
   # Weather & Location
   weather: ^3.1.2
   geocoding: ^3.0.0
+  
+  # External Links & Email
+  url_launcher: ^6.2.5
+  mailto: ^2.0.0
 
 dev_dependencies:
   flutter_test:

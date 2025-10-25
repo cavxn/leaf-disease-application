@@ -5,6 +5,7 @@ import '../providers/theme_provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/disease_history_provider.dart';
 import '../utils/app_theme.dart';
+import '../services/settings_service.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -185,8 +186,16 @@ class SettingsScreen extends StatelessWidget {
                             DropdownMenuItem(value: 'standard', child: Text('Standard')),
                             DropdownMenuItem(value: 'high', child: Text('High Resolution')),
                           ],
-                          onChanged: (val) {
-                            // TODO: Save image quality setting
+                          onChanged: (val) async {
+                            if (val != null) {
+                              await SettingsService.setImageQuality(val);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Image quality set to ${val == 'high' ? 'High Resolution' : 'Standard'}'),
+                                  backgroundColor: AppTheme.neonGradient.colors.first,
+                                ),
+                              );
+                            }
                           },
                         ),
                       ],
@@ -203,15 +212,36 @@ class SettingsScreen extends StatelessWidget {
                           icon: Icons.cleaning_services_rounded,
                           title: 'Clear Cache',
                           subtitle: 'Free up storage space',
-                          trailing: Text(
-                            '12.3 MB',
-                            style: TextStyle(
-                              color: AppTheme.neonGradient.colors.first,
-                              fontWeight: FontWeight.w600,
-                            ),
+                          trailing: FutureBuilder<double>(
+                            future: SettingsService.getCacheSize(),
+                            builder: (context, snapshot) {
+                              final size = snapshot.data ?? 0.0;
+                              return Text(
+                                SettingsService.formatCacheSize(size),
+                                style: TextStyle(
+                                  color: AppTheme.neonGradient.colors.first,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              );
+                            },
                           ),
-                          onTap: () {
-                            // TODO: Clear cache logic
+                          onTap: () async {
+                            try {
+                              await SettingsService.clearCache();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text('✅ Cache cleared successfully!'),
+                                  backgroundColor: AppTheme.neonGradient.colors.first,
+                                ),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('❌ Failed to clear cache: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
                           },
                         ),
                       ],
@@ -230,8 +260,23 @@ class SettingsScreen extends StatelessWidget {
                               child: _FuturisticButton(
                                 icon: Icons.picture_as_pdf_rounded,
                                 label: 'Export PDF',
-                                onPressed: () {
-                                  // TODO: Export as PDF
+                                onPressed: () async {
+                                  try {
+                                    await SettingsService.exportToPDF();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: const Text('📄 PDF export initiated'),
+                                        backgroundColor: AppTheme.neonGradient.colors.first,
+                                      ),
+                                    );
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('❌ PDF export failed: $e'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
                                 },
                               ),
                             ),
@@ -240,8 +285,23 @@ class SettingsScreen extends StatelessWidget {
                               child: _FuturisticButton(
                                 icon: Icons.table_chart_rounded,
                                 label: 'Export CSV',
-                                onPressed: () {
-                                  // TODO: Export as CSV
+                                onPressed: () async {
+                                  try {
+                                    await SettingsService.exportToCSV();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: const Text('📊 CSV export initiated'),
+                                        backgroundColor: AppTheme.neonGradient.colors.first,
+                                      ),
+                                    );
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('❌ CSV export failed: $e'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
                                 },
                               ),
                             ),
@@ -292,8 +352,17 @@ class SettingsScreen extends StatelessWidget {
                           icon: Icons.code_rounded,
                           title: 'Created by Cavin and Bharath',
                           subtitle: 'github.com/Bharath-123',
-                          onTap: () {
-                            // TODO: Open GitHub
+                          onTap: () async {
+                            try {
+                              await SettingsService.openGitHub();
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('❌ Could not open GitHub: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
                           },
                         ),
                         _FuturisticSettingsTile(
@@ -314,8 +383,17 @@ class SettingsScreen extends StatelessWidget {
                         _FuturisticButton(
                           icon: Icons.bug_report_rounded,
                           label: 'Send Feedback / Report Issue',
-                          onPressed: () {
-                            // TODO: Open feedback form or email
+                          onPressed: () async {
+                            try {
+                              await SettingsService.openFeedback();
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('❌ Could not open feedback: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
                           },
                         ),
                       ],
