@@ -156,13 +156,59 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (context) => ResultScreen(detection: detection),
         ),
       );
-    } catch (e) {
-      print('💥 Error in disease detection: $e');
+    } on ApiException catch (e) {
+      print('💥 API Error: ${e.code} - ${e.message}');
+      
+      String userMessage;
+      switch (e.code) {
+        case 'FILE_NOT_FOUND':
+          userMessage = 'Image file not found. Please try selecting another image.';
+          break;
+        case 'FILE_TOO_LARGE':
+          userMessage = 'Image file is too large. Please select a smaller image (max 10MB).';
+          break;
+        case 'NETWORK_ERROR':
+          userMessage = 'Network connection failed. Please check your internet connection.';
+          break;
+        case 'TIMEOUT_ERROR':
+          userMessage = 'Request timed out. Please try again.';
+          break;
+        case 'SERVER_ERROR':
+          userMessage = 'Server error occurred. Please try again later.';
+          break;
+        case 'PARSE_ERROR':
+          userMessage = 'Invalid response from server. Please try again.';
+          break;
+        default:
+          userMessage = 'Error detecting disease: ${e.message}';
+      }
+      
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: ${e.toString()}'),
+          content: Text(userMessage),
           backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+          action: SnackBarAction(
+            label: 'Retry',
+            textColor: Colors.white,
+            onPressed: () => _detectDisease(),
+          ),
+        ),
+      );
+    } catch (e) {
+      print('💥 Unexpected error in disease detection: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Unexpected error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+          action: SnackBarAction(
+            label: 'Retry',
+            textColor: Colors.white,
+            onPressed: () => _detectDisease(),
+          ),
         ),
       );
     } finally {

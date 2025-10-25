@@ -1,6 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:async';
 import 'package:http/http.dart' as http;
+
+class ApiException implements Exception {
+  final String message;
+  final String code;
+  final String? details;
+  
+  ApiException(this.message, this.code, {this.details});
+  
+  @override
+  String toString() => 'ApiException($code): $message${details != null ? ' - $details' : ''}';
+}
 
 class ApiService {
   // Production URL - Update this to your Render deployment URL after deployment
@@ -16,7 +28,13 @@ class ApiService {
       
       // Check if image file exists and is readable
       if (!await image.exists()) {
-        throw Exception('Image file does not exist');
+        throw ApiException('Image file does not exist', 'FILE_NOT_FOUND');
+      }
+      
+      // Check file size (max 10MB)
+      final fileSize = await image.length();
+      if (fileSize > 10 * 1024 * 1024) {
+        throw ApiException('Image file is too large (max 10MB)', 'FILE_TOO_LARGE');
       }
       
       final request = http.MultipartRequest(
@@ -51,22 +69,40 @@ class ApiService {
         final result = {
           'prediction': prediction,
           'confidence': confidence,
+          'model_type': data['model_type'] ?? 'unknown',
         };
         
         print('✅ Final result: $result');
         return result;
       } else {
         print('❌ API Error: ${responseBody.statusCode} - ${responseBody.body}');
-        throw Exception('Prediction failed: ${responseBody.statusCode} - ${responseBody.body}');
+        throw ApiException(
+          'Server error: ${responseBody.statusCode}', 
+          'SERVER_ERROR',
+          details: responseBody.body
+        );
       }
+    } on ApiException {
+      rethrow; // Re-throw our custom exceptions
+    } on http.ClientException catch (e) {
+      print('💥 Network connection error: $e');
+      throw ApiException('Network connection failed', 'NETWORK_ERROR', details: e.toString());
+    } on TimeoutException catch (e) {
+      print('⏰ Request timeout: $e');
+      throw ApiException('Request timed out', 'TIMEOUT_ERROR', details: e.toString());
+    } on FormatException catch (e) {
+      print('📄 JSON parsing error: $e');
+      throw ApiException('Invalid response format', 'PARSE_ERROR', details: e.toString());
     } catch (e) {
-      print('💥 Network error: $e');
+      print('💥 Unexpected error: $e');
       
       // Fallback to mock data for testing
       print('🔄 Using fallback mock data');
       return {
         'prediction': _getMockPrediction(),
         'confidence': 0.85, // 85% confidence for mock data
+        'model_type': 'mock',
+        'fallback_reason': e.toString(),
       };
     }
   }
