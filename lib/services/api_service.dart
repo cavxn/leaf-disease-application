@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
 import 'package:http/http.dart' as http;
+import 'offline_service.dart';
 
 class ApiException implements Exception {
   final String message;
@@ -24,7 +25,7 @@ class ApiService {
 
   static Future<Map<String, dynamic>> predictDisease(File image) async {
     try {
-      print('🌐 Sending image to backend: $_baseUrl$_predictEndpoint');
+      print('🌐 Starting disease prediction for: ${image.path}');
       
       // Check if image file exists and is readable
       if (!await image.exists()) {
@@ -36,6 +37,39 @@ class ApiService {
       if (fileSize > 10 * 1024 * 1024) {
         throw ApiException('Image file is too large (max 10MB)', 'FILE_TOO_LARGE');
       }
+      
+      // Check for cached prediction first
+      final cachedResult = await OfflineService.getCachedPrediction(image.path);
+      if (cachedResult != null) {
+        print('📱 Using cached prediction (offline mode)');
+        return {
+          ...cachedResult,
+          'cached': true,
+          'model_type': 'cached',
+        };
+      }
+      
+      // Check internet connectivity
+      final hasInternet = await OfflineService.hasInternetConnection();
+      if (!hasInternet) {
+        print('📱 No internet connection, using mock prediction');
+        final mockResult = {
+          'prediction': _getMockPrediction(),
+          'confidence': 0.75,
+          'model_type': 'mock_offline',
+          'offline': true,
+        };
+        
+        // Cache the mock result
+        await OfflineService.cachePrediction(
+          imagePath: image.path,
+          prediction: mockResult,
+        );
+        
+        return mockResult;
+      }
+      
+      print('🌐 Sending image to backend: $_baseUrl$_predictEndpoint');
       
       final request = http.MultipartRequest(
         'POST', 
@@ -71,6 +105,12 @@ class ApiService {
           'confidence': confidence,
           'model_type': data['model_type'] ?? 'unknown',
         };
+        
+        // Cache the successful prediction
+        await OfflineService.cachePrediction(
+          imagePath: image.path,
+          prediction: result,
+        );
         
         print('✅ Final result: $result');
         return result;

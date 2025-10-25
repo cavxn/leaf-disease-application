@@ -94,6 +94,9 @@ dependencies:
   # External Links & Email
   url_launcher: ^6.2.5
   mailto: ^2.0.0
+  
+  # Crypto for hashing
+  crypto: ^3.0.3
 
 dev_dependencies:
   flutter_test:
