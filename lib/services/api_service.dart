@@ -3,9 +3,8 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  // Production URL - Update this to your Render deployment URL
-  static const String _baseUrl = "https://your-app-name.onrender.com";
-  // For local development, use: "http://localhost:8000"
+  // Production URL - Update this to your Render deployment URL after deployment
+  static const String _baseUrl = "http://localhost:8000";  // Change to your Render URL after deployment
   static const String _predictEndpoint = "/predict";
   
   // Timeout duration for API calls
