@@ -10,20 +10,6 @@ import random
 import warnings
 from typing import Dict, Any
 
-# Try to import quantum detector, fallback if not available
-try:
-    from quantum_ai_detector import quantum_detector
-    QUANTUM_AVAILABLE = True
-    logger.info("✅ Quantum AI detector loaded successfully")
-except ImportError as e:
-    logger.warning(f"⚠️ Quantum AI detector not available: {e}")
-    QUANTUM_AVAILABLE = False
-    quantum_detector = None
-except Exception as e:
-    logger.warning(f"⚠️ Quantum AI detector failed to load: {e}")
-    QUANTUM_AVAILABLE = False
-    quantum_detector = None
-
 # Suppress warnings
 warnings.filterwarnings('ignore')
 
@@ -32,8 +18,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
-    title="Quantum AI Leaf Disease Detection API",
-    description="Quantum AI-powered plant disease detection using Variational Quantum Classifier",
+    title="Leaf Disease Detection API",
+    description="Plant disease detection API with TensorFlow model",
     version="2.0.0"
 )
 
@@ -251,7 +237,6 @@ async def root():
     return {
         "message": "🌿 Leaf Disease Detection API is running!",
         "model_loaded": model_loaded,
-        "quantum_available": QUANTUM_AVAILABLE,
         "version": "2.0.0",
         "mode": "tensorflow" if model_loaded else "mock"
     }
@@ -262,7 +247,6 @@ async def health_check():
     return {
         "status": "healthy",
         "model_loaded": model_loaded,
-        "quantum_available": QUANTUM_AVAILABLE,
         "class_count": len(CLASS_NAMES),
         "version": "2.0.0",
         "mode": "tensorflow" if model_loaded else "mock"
@@ -313,63 +297,45 @@ async def get_classes():
 
 @app.get("/quantum/advantages")
 async def get_quantum_advantages():
-    """Get quantum AI advantages"""
-    if not QUANTUM_AVAILABLE or quantum_detector is None:
-        return {
-            "error": "Quantum AI detector not available",
-            "status": "fallback_mode",
-            "message": "Quantum features are disabled due to dependency issues"
-        }
-    return quantum_detector.get_quantum_advantages()
+    """Get quantum AI advantages (fallback mode)"""
+    return {
+        "error": "Quantum AI detector not available",
+        "status": "fallback_mode",
+        "message": "Quantum features are disabled for deployment stability",
+        "note": "This is a deployment-optimized version without quantum dependencies"
+    }
 
 @app.get("/quantum/limitations")
 async def get_quantum_limitations():
-    """Get quantum AI limitations"""
-    if not QUANTUM_AVAILABLE or quantum_detector is None:
-        return {
-            "error": "Quantum AI detector not available",
-            "status": "fallback_mode",
-            "message": "Quantum features are disabled due to dependency issues"
-        }
-    return quantum_detector.get_quantum_limitations()
+    """Get quantum AI limitations (fallback mode)"""
+    return {
+        "error": "Quantum AI detector not available",
+        "status": "fallback_mode",
+        "message": "Quantum features are disabled for deployment stability"
+    }
 
 @app.get("/quantum/solutions")
 async def get_quantum_solutions():
-    """Get solutions for quantum limitations"""
-    if not QUANTUM_AVAILABLE or quantum_detector is None:
-        return {
-            "error": "Quantum AI detector not available",
-            "status": "fallback_mode",
-            "message": "Quantum features are disabled due to dependency issues"
-        }
-    return quantum_detector.get_quantum_solutions()
+    """Get solutions for quantum limitations (fallback mode)"""
+    return {
+        "error": "Quantum AI detector not available",
+        "status": "fallback_mode",
+        "message": "Quantum features are disabled for deployment stability"
+    }
 
 @app.get("/quantum/analysis")
 async def get_quantum_analysis():
-    """Get complete quantum AI analysis"""
-    if not QUANTUM_AVAILABLE or quantum_detector is None:
-        return {
-            "error": "Quantum AI detector not available",
-            "status": "fallback_mode",
-            "message": "Quantum features are disabled due to dependency issues",
-            "implementation_status": {
-                "quantum_circuit": "Not Available",
-                "variational_classifier": "Not Available", 
-                "feature_mapping": "Not Available",
-                "error_handling": "Not Available",
-                "hybrid_approach": "Not Available"
-            }
-        }
+    """Get complete quantum AI analysis (fallback mode)"""
     return {
-        "advantages": quantum_detector.get_quantum_advantages(),
-        "limitations": quantum_detector.get_quantum_limitations(),
-        "solutions": quantum_detector.get_quantum_solutions(),
+        "error": "Quantum AI detector not available",
+        "status": "fallback_mode",
+        "message": "Quantum features are disabled for deployment stability",
         "implementation_status": {
-            "quantum_circuit": "Implemented",
-            "variational_classifier": "Implemented", 
-            "feature_mapping": "Implemented",
-            "error_handling": "Implemented",
-            "hybrid_approach": "Ready for implementation"
+            "quantum_circuit": "Not Available",
+            "variational_classifier": "Not Available", 
+            "feature_mapping": "Not Available",
+            "error_handling": "Not Available",
+            "hybrid_approach": "Not Available"
         }
     }
 
