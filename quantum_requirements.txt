@@ -1,0 +1,24 @@
+# Quantum AI Dependencies
+qiskit==0.45.0
+qiskit-machine-learning==0.7.1
+qiskit-algorithms==0.2.0
+qiskit-aer==0.13.0
+qiskit-optimization==0.6.0
+
+# Core ML Dependencies
+numpy==1.24.3
+scikit-learn==1.3.0
+tensorflow==2.13.0
+
+# API Dependencies
+fastapi==0.95.0
+uvicorn[standard]==0.22.0
+python-multipart==0.0.6
+pydantic==1.10.12
+pillow==10.1.0
+typing-extensions==4.5.0
+
+# Additional Quantum Libraries
+cirq==1.2.0
+pennylane==0.32.0
+pennylane-qiskit==0.32.0

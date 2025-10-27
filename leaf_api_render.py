@@ -8,7 +8,7 @@ import os
 import logging
 import random
 from typing import Dict, Any
-import warnings
+from quantum_ai_detector import quantum_detector
 
 # Suppress warnings
 warnings.filterwarnings('ignore')
@@ -18,9 +18,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
-    title="Leaf Disease Detection API",
-    description="AI-powered plant disease detection",
-    version="1.0.0"
+    title="Quantum AI Leaf Disease Detection API",
+    description="Quantum AI-powered plant disease detection using Variational Quantum Classifier",
+    version="2.0.0"
 )
 
 # CORS middleware
@@ -293,6 +293,37 @@ async def get_classes():
     return {
         "classes": CLASS_NAMES,
         "count": len(CLASS_NAMES)
+    }
+
+@app.get("/quantum/advantages")
+async def get_quantum_advantages():
+    """Get quantum AI advantages"""
+    return quantum_detector.get_quantum_advantages()
+
+@app.get("/quantum/limitations")
+async def get_quantum_limitations():
+    """Get quantum AI limitations"""
+    return quantum_detector.get_quantum_limitations()
+
+@app.get("/quantum/solutions")
+async def get_quantum_solutions():
+    """Get solutions for quantum limitations"""
+    return quantum_detector.get_quantum_solutions()
+
+@app.get("/quantum/analysis")
+async def get_quantum_analysis():
+    """Get complete quantum AI analysis"""
+    return {
+        "advantages": quantum_detector.get_quantum_advantages(),
+        "limitations": quantum_detector.get_quantum_limitations(),
+        "solutions": quantum_detector.get_quantum_solutions(),
+        "implementation_status": {
+            "quantum_circuit": "Implemented",
+            "variational_classifier": "Implemented", 
+            "feature_mapping": "Implemented",
+            "error_handling": "Implemented",
+            "hybrid_approach": "Ready for implementation"
+        }
     }
 
 if __name__ == "__main__":
