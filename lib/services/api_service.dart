@@ -16,8 +16,8 @@ class ApiException implements Exception {
 }
 
 class ApiService {
-  // Local backend URL - running on localhost
-  static const String _baseUrl = "http://localhost:8000";
+  // Local backend URL - running on computer's IP address
+  static const String _baseUrl = "http://172.20.188.100:8000";
   static const String _predictEndpoint = "/predict";
   
   // Timeout duration for API calls
