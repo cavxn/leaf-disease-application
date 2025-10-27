@@ -20,14 +20,8 @@ def main():
         print(f"Expected: {backend_dir}")
         return 1
     
-    # Check if backend files exist
-    if not (backend_dir / "leaf_api.py").exists():
-        print("❌ Backend files not found!")
-        print(f"Expected leaf_api.py in: {backend_dir}")
-        return 1
-    
-    # Change to backend directory
-    os.chdir(backend_dir)
+    # Change to project root directory
+    os.chdir(script_dir)
     
     print("🌿 Starting Leaf Disease Detector Backend...")
     print(f"📁 Working directory: {os.getcwd()}")
@@ -36,13 +30,9 @@ def main():
         # Use the correct Python version (3.10 where packages are installed)
         python_cmd = "/Users/cavins/.pyenv/shims/python3"
         
-        # Start the FastAPI server with uvicorn (using simple version for now)
+        # Start the local Flask API server
         cmd = [
-            python_cmd, "-m", "uvicorn", 
-            "leaf_api_simple:app", 
-            "--host", "0.0.0.0", 
-            "--port", "8000", 
-            "--reload"
+            python_cmd, "local_api.py"
         ]
         
         print(f"🚀 Running command: {' '.join(cmd)}")

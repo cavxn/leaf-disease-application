@@ -16,8 +16,8 @@ class ApiException implements Exception {
 }
 
 class ApiService {
-  // Production URL - Update this to your Render deployment URL after deployment
-  static const String _baseUrl = "https://leaf-disease-application.onrender.com";
+  // Local backend URL - running on localhost
+  static const String _baseUrl = "http://localhost:8000";
   static const String _predictEndpoint = "/predict";
   
   // Timeout duration for API calls
